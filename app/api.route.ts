@@ -6,7 +6,7 @@ puppeteer.use(StealthPlugin());
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 
-// Magic byte validation
+// Magic byte validation (unchanged)
 const IMAGE_SIGNATURES = {
   png: Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
   jpeg: Buffer.from([0xFF, 0xD8, 0xFF]),
@@ -73,6 +73,7 @@ async function fetchWithPuppeteer(url: string): Promise<{ buffer: Buffer; conten
   }
 }
 
+// CRITICAL: Export POST handler (this handles 405)
 export async function POST(request: NextRequest) {
   try {
     const { url } = await request.json();
@@ -113,4 +114,9 @@ export async function POST(request: NextRequest) {
     console.error('API Error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
+}
+
+// Optional: Export GET for testing (returns 405 for other methods)
+export async function GET() {
+  return NextResponse.json({ error: 'Use POST for image fetching' }, { status: 405 });
 }
